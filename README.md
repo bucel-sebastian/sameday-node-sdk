@@ -1,20 +1,38 @@
-﻿# sameday-node-sdk
+﻿<div align="center">
 
-[![npm version](https://img.shields.io/npm/v/sameday-node-sdk.svg)](https://www.npmjs.com/package/sameday-node-sdk)
+<!-- wordmark: pure shields.io static badge, no hosted assets needed -->
+![](https://img.shields.io/badge/SAMEDAY-Node.js%20SDK-1B4965?style=for-the-badge&logo=nodedotjs&logoColor=white&labelColor=0F2B46)
+
+# Sameday Courier SDK for Node.js
+
+**TypeScript-first client for the Sameday courier API (Romania).**
+
+*AWBs · Pickup points · Geolocation · Status sync · Lockers (OOH) · COD ledgers · Standby returns · UIT codes*
+
+[![npm version](https://img.shields.io/npm/v/sameday-node-sdk.svg?color=cb3837)](https://www.npmjs.com/package/sameday-node-sdk)
+[![node >= 20](https://img.shields.io/badge/node-%E2%89%A5%2020-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![CI](https://github.com/bucel-sebastian/sameday-node-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/bucel-sebastian/sameday-node-sdk/actions/workflows/ci.yml)
+[![downloads](https://img.shields.io/npm/dm/sameday-node-sdk.svg)](https://www.npmjs.com/package/sameday-node-sdk)
 [![license: MIT](https://img.shields.io/npm/l/sameday-node-sdk.svg)](https://opensource.org/license/mit)
 
-TypeScript/JavaScript client for the Sameday courier API (Romania): AWBs, pickup points, geolocation, status sync, lockers/OOH, COD ledgers, standby returns and UIT codes.
+</div>
+
+---
+
+## Contents
+
+[Features](#features) · [Installation](#installation) · [Quickstart](#quickstart) · [Guides](#guides) · [Error handling](#error-handling) · [Configuration](#configuration) · [Testing and CI](#testing-and-ci) · [Contributing](#contributing) · [License](#license)
+
+---
 
 ## Features
 
-- **Zero runtime dependencies** â€” native `fetch`, Node.js >= 20
-- **Full 36-endpoint coverage** across nine namespaces (`awb`, `pickupPoints`, `geolocation`, `services`, `status`, `ooh`, `ledger`, `standbyReturns`, `uitCodes`)
-- **Typed error hierarchy** â€” HTTP status mapped to `ValidationError`, `AuthenticationError`, `NotFoundError`, `RateLimitError`, ...
-- **Bracket-notation form encoding** â€” pass plain nested JS objects; the SDK sends `awbRecipient[name]=...` bodies the API expects
-- **Async-iterator pagination** â€” `for await (const item of client.<resource>.iterate())` walks every page
-- **Automatic auth** â€” token obtained, cached and refreshed for you (12h or 14-day tokens)
-- **Dual ESM + CJS builds** with bundled type declarations
+| | |
+|:---|:---|
+| ⚡ **Zero runtime dependencies** — native `fetch`, Node.js >= 20 | 🧩 **Full 36-endpoint coverage** across nine namespaces (`awb`, `pickupPoints`, `geolocation`, `services`, `status`, `ooh`, `ledger`, `standbyReturns`, `uitCodes`) |
+| 🔐 **Typed error hierarchy** — HTTP status mapped to `ValidationError`, `AuthenticationError`, `NotFoundError`, `RateLimitError`, … | 🧾 **Bracket-notation form encoding** — pass plain nested JS objects; the SDK sends the `awbRecipient[name]=...` bodies the API expects |
+| 🔁 **Async-iterator pagination** — `for await (const item of client.<resource>.iterate())` walks every page | 🔑 **Automatic auth** — token obtained, cached and refreshed for you (12h or 14-day tokens) |
+| 📦 **Dual ESM + CJS builds** with bundled type declarations | 🧪 **Tested against the live API** — 36-endpoint unit suite + opt-in integration suite |
 
 ## Installation
 
@@ -22,9 +40,9 @@ TypeScript/JavaScript client for the Sameday courier API (Romania): AWBs, pickup
 npm install sameday-node-sdk
 ```
 
-Requires **Node.js >= 20** (the SDK uses the built-in `fetch`).
+> **Requires Node.js >= 20** — the SDK uses the built-in `fetch`; there is nothing else to install.
 
-### Quickstart
+## Quickstart
 
 ```ts
 import { SamedayClient } from 'sameday-node-sdk';
@@ -53,6 +71,8 @@ const awb = await client.awb.create({
 console.log(awb.awbNumber);
 ```
 
+> **Tip** Set `environment: 'prod'` (or omit it — that's the default) to target the live API. Auth is handled for you: the token is fetched lazily on the first call and refreshed before it expires.
+
 ## Guides
 
 | Guide | What it covers |
@@ -64,23 +84,22 @@ console.log(awb.awbNumber);
 | [Error handling](docs/errors.md) | Error hierarchy, envelope mapping, timeouts, retrying |
 | [Configuration](docs/configuration.md) | All client options, `X-Platform` header, timeouts, `fetchImpl` |
 | [Testing](docs/testing.md) | Unit suite, opt-in integration suite, GitHub secrets |
-| [Releasing](docs/releasing.md) | Versioning, tag-driven releases, OIDC trusted publishing |
 
-The full method reference is generated with `npm run docs` into `docs/api/index.html`.
+> **Tip** The full method reference is generated with `npm run docs` into `docs/api/index.html` (open it locally in a browser).
 
 ## Error handling
 
 Every SDK error extends `SamedayError` and is chosen by HTTP status. The API's `{ error: { code, message } }` envelope is unwrapped onto `.message`/`.code`; the HTTP status is on `.status` and the parsed body on `.raw`.
 
-| Class | Raised on |
-|---|---|
-| `SamedayError` | Base class; also timeouts and JSON parse failures |
-| `ValidationError` | 400 â€” malformed request (details in `.raw`) |
-| `AuthenticationError` | 401 â€” invalid credentials/token |
-| `PermissionError` | 403 â€” authenticated but not allowed |
-| `NotFoundError` | 404 â€” resource does not exist |
-| `RateLimitError` | 429 â€” exposes `.retryAfter` (seconds) |
-| `ServerError` | 5xx â€” API failed to process the request |
+| | Class | Raised on |
+|:---:|---|---|
+| 🧩 | `SamedayError` | Base class — also timeouts and JSON parse failures |
+| 🚫 | `ValidationError` | 400 — malformed request (details in `.raw`) |
+| 🔑 | `AuthenticationError` | 401 — invalid credentials/token |
+| 🔒 | `PermissionError` | 403 — authenticated but not allowed |
+| ❓ | `NotFoundError` | 404 — resource does not exist |
+| ⏳ | `RateLimitError` | 429 — exposes `.retryAfter` (seconds) |
+| 🔥 | `ServerError` | 5xx — API failed to process the request |
 
 ```ts
 import { ValidationError, RateLimitError } from 'sameday-node-sdk';
@@ -94,7 +113,7 @@ try {
 }
 ```
 
-See [Error handling](docs/errors.md) for the full hierarchy, timeout/network behavior and a retry example.
+See the [error handling guide](docs/errors.md) for the full hierarchy, timeout/network behavior and a retry example.
 
 ## Configuration
 
@@ -102,16 +121,16 @@ Options accepted by `new SamedayClient(...)`:
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `user` | `string` | â€” (required) | API username, sent as `X-AUTH-USERNAME` |
-| `password` | `string` | â€” (required) | API password, sent as `X-AUTH-PASSWORD` |
+| `user` | `string` | — (required) | API username, sent as `X-AUTH-USERNAME` |
+| `password` | `string` | — (required) | API password, sent as `X-AUTH-PASSWORD` |
 | `environment` | `'prod' \| 'demo'` | `'prod'` | Base URL preset: `https://api.sameday.ro` or `https://sameday-api.demo.zitec.com`; ignored when `baseUrl` is set |
-| `baseUrl` | `string` | â€” | Full base URL, overrides `environment` |
-| `rememberMe` | `boolean` | `true` | `true` â†’ 14-day token, `false` â†’ 12-hour token |
-| `platformName` | `string` | â€” | With `platformVersion` sets `X-Platform: name/version` (both required) |
-| `platformVersion` | `string` | â€” | See `platformName` |
+| `baseUrl` | `string` | — | Full base URL, overrides `environment` |
+| `rememberMe` | `boolean` | `true` | `true` → 14-day token, `false` → 12-hour token |
+| `platformName` | `string` | — | With `platformVersion` sets `X-Platform: name/version` (both required) |
+| `platformVersion` | `string` | — | See `platformName` |
 | `timeoutMs` | `number` | `30000` | Per-request timeout in milliseconds |
 
-See [Configuration](docs/configuration.md) for details, including custom base URLs and `fetchImpl` injection.
+See the [configuration guide](docs/configuration.md) for details, including custom base URLs and `fetchImpl` injection.
 
 ## Testing and CI
 
@@ -126,19 +145,18 @@ The live-API integration suite is opt-in and skips itself without credentials:
 SAMEDAY_USER=... SAMEDAY_PASSWORD=... SAMEDAY_ENV=demo npm run test:integration
 ```
 
-CI (`.github/workflows/ci.yml`) runs lint, typecheck and the unit suite on Node 20, 22 and 24 for every push/PR; the integration job runs only when the `SAMEDAY_USER`/`SAMEDAY_PASSWORD` repository secrets are configured. Details in [Testing](docs/testing.md).
+CI (`.github/workflows/ci.yml`) runs lint, typecheck and the unit suite on Node 20, 22 and 24 for every push/PR; the integration job runs only when the `SAMEDAY_USER`/`SAMEDAY_PASSWORD` repository secrets are configured. Details in the [testing guide](docs/testing.md).
 
-## Releasing
+## Contributing
 
-Releases are tag-driven: bump the version, push a `v*` tag, and `.github/workflows/release.yml` gates on lint + typecheck + tests, builds, verifies the tag matches `package.json`, publishes to npm with **provenance via OIDC trusted publishing** (no npm token secret), and creates a GitHub Release:
+Bug reports and feature requests are welcome in [GitHub Issues](https://github.com/bucel-sebastian/sameday-node-sdk/issues); pull requests are encouraged — run `npm run lint`, `npm run typecheck` and `npm test` before opening one (see the [testing guide](docs/testing.md)).
 
-```bash
-npm version patch   # or minor / major
-git push --follow-tags
-```
+---
 
-Full walkthrough in [Releasing](docs/releasing.md).
+<div align="center">
 
-## License
+Released under the [MIT](LICENSE) license.
 
-[MIT](LICENSE)
+`npm install sameday-node-sdk`
+
+</div>
