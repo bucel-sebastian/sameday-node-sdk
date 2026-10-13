@@ -147,3 +147,11 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Build / test output
+dist/
+coverage/
+.vitest/
+
+# TypeDoc output (generate with `npm run docs`)
+docs/

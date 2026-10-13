@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:coverage
+      - name: Upload coverage report
+        if: matrix.node-version == 22
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+
+  # Secrets cannot be referenced directly in `if:` conditionals (GitHub docs),
+  # so they are exposed as job-level env vars and steps are guarded on env.
+  # With no secrets configured, every step is skipped and the job no-ops.
+  integration:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      SAMEDAY_USER: ${{ secrets.SAMEDAY_USER }}
+      SAMEDAY_PASSWORD: ${{ secrets.SAMEDAY_PASSWORD }}
+    steps:
+      - name: Checkout
+        if: env.SAMEDAY_USER != ''
+        uses: actions/checkout@v4
+      - name: Use Node.js 22
+        if: env.SAMEDAY_USER != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        if: env.SAMEDAY_USER != ''
+        run: npm ci
+      - name: Run integration tests
+        if: env.SAMEDAY_USER != ''
+        run: npm run test:integration
+        env:
+          SAMEDAY_ENV: demo

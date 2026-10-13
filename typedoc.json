@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "out": "docs",
+  "name": "sameday-node-sdk",
+  "readme": "README.md",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "validation": {
+    "notExported": false
+  },
+  "externalSymbolLinkMappings": {
+    "sameday-node-sdk": {
+      "iteratePaginated": "#"
+    }
+  },
+  "githubPages": false,
+  "navigationLinks": {
+    "GitHub": "https://github.com/bucel-sebastian/sameday-node-sdk"
+  }
+}
