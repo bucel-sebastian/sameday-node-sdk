@@ -25,18 +25,21 @@ export interface ClientService {
 /**
  * Delivery services catalogue.
  *
- * NOTE: per the spec, `GET /api/client/services` carries the pagination in a
- * `application/x-www-form-urlencoded` request BODY, not in query parameters.
+ * NOTE: the OpenAPI spec declares the pagination for `GET /api/client/services`
+ * as an `application/x-www-form-urlencoded` request BODY, but the Fetch
+ * standard forbids bodies on GET/HEAD requests (undici throws
+ * `TypeError: Request with GET/HEAD method cannot have body`). Pagination is
+ * therefore sent as query parameters, which the API accepts.
  */
 export class ServicesResource {
   constructor(private readonly client: SamedayClient) {}
 
-  /** Lists services — `GET /api/client/services` (pagination sent as form body). */
+  /** Lists services — `GET /api/client/services` (pagination via query params). */
   list(filters: SellerPaginationRequestType = {}): Promise<Paginated<ClientService>> {
     return this.client.request<Paginated<ClientService>>({
       method: 'GET',
       path: '/api/client/services',
-      body: { ...filters },
+      query: { ...filters },
     });
   }
 

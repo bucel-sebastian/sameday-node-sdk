@@ -2,8 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
+  # Manual trigger: Actions → CI → Run workflow
+  workflow_dispatch:
 
 permissions:
   contents: read

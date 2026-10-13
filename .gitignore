@@ -153,5 +153,5 @@ dist/
 coverage/
 .vitest/
 
-# TypeDoc output (generate with `npm run docs`)
-docs/
+# TypeDoc generated API reference (generate with `npm run docs`)
+docs/api/

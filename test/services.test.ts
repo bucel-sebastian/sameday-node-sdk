@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { SamedayClient } from '../src/client';
 import { ServicesResource } from '../src/resources/services';
-import { getBody, getHeaders, jsonResponse } from './helpers';
+import { jsonResponse } from './helpers';
 
 interface RecordedCall {
   url: string;
@@ -42,7 +42,7 @@ function resourceCalls(calls: RecordedCall[]): RecordedCall[] {
 }
 
 describe('ServicesResource', () => {
-  it('list with no filters sends an empty form body and no query string', async () => {
+  it('list with no filters sends no query string and no body', async () => {
     const { resource, calls } = setup(() =>
       servicePage(
         [
@@ -68,27 +68,25 @@ describe('ServicesResource', () => {
     const call = calls[1];
     expect(call.init?.method).toBe('GET');
     expect(call.url).toBe(`${BASE}/api/client/services`);
-    expect(getHeaders(call.init)['Content-Type']).toBe(
-      'application/x-www-form-urlencoded',
-    );
-    expect(getBody(call.init)).toBe('');
+    // Fetch forbids bodies on GET — the SDK must not send one.
+    expect(call.init?.body).toBeUndefined();
   });
 
-  it('list sends pagination in the form body, not the query string', async () => {
+  it('list sends pagination in the query string (GET cannot carry a body)', async () => {
     const { resource, calls } = setup(() => servicePage([], 1, 0));
 
     await resource.list({ page: 2, countPerPage: 10 });
 
     const call = calls[1];
-    expect(new URL(call.url).search).toBe('');
-    const form = new URLSearchParams(getBody(call.init));
-    expect(form.get('page')).toBe('2');
-    expect(form.get('countPerPage')).toBe('10');
+    const url = new URL(call.url);
+    expect(url.searchParams.get('page')).toBe('2');
+    expect(url.searchParams.get('countPerPage')).toBe('10');
+    expect(call.init?.body).toBeUndefined();
   });
 
-  it('iterate walks pages via the form body until exhausted', async () => {
+  it('iterate walks pages via the query string until exhausted', async () => {
     const { resource, calls } = setup((call) => {
-      const page = new URLSearchParams(getBody(call.init)).get('page') ?? '1';
+      const page = new URL(call.url).searchParams.get('page') ?? '1';
       if (page === '1') {
         return servicePage(
           [{ id: 5, name: 'Courier 24h' }, { id: 6, name: 'Courier 48h' }],
@@ -107,10 +105,9 @@ describe('ServicesResource', () => {
     expect(seen).toEqual(['Courier 24h', 'Courier 48h', 'Locker 24h']);
     const fetched = resourceCalls(calls);
     expect(fetched).toHaveLength(2);
-    expect(new URL(fetched[0].url).search).toBe('');
-    expect(new URLSearchParams(getBody(fetched[0].init)).get('page')).toBe('1');
-    expect(new URLSearchParams(getBody(fetched[1].init)).get('page')).toBe('2');
-    expect(new URLSearchParams(getBody(fetched[1].init)).get('countPerPage')).toBe('500');
+    expect(new URL(fetched[0].url).searchParams.get('page')).toBe('1');
+    expect(new URL(fetched[1].url).searchParams.get('page')).toBe('2');
+    expect(new URL(fetched[1].url).searchParams.get('countPerPage')).toBe('500');
   });
 
   it('iterate stops after an early break without fetching more pages', async () => {
