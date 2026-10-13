@@ -1,4 +1,4 @@
-# Testing
+﻿# Testing
 
 Two suites: a fast unit suite that never touches the network, and an opt-in
 integration suite that runs against the live (demo) API.
@@ -6,7 +6,7 @@ integration suite that runs against the live (demo) API.
 ## Unit suite
 
 ```bash
-npm test              # vitest run — mocked fetch, no network
+npm test              # vitest run â€” mocked fetch, no network
 npm run test:watch    # watch mode
 npm run test:coverage # v8 coverage + thresholds
 ```
@@ -64,14 +64,14 @@ npm run test:integration
 
 Properties of the suite (see `test/integration/helpers.ts`):
 
-- **Read-only / non-committing** — authenticate, paginated catalogues,
+- **Read-only / non-committing** â€” authenticate, paginated catalogues,
   geolocation, price estimates. Nothing creates, edits or cancels real AWBs.
-- **Capture-and-assert** — the live client wraps `fetch` with a recorder, so
+- **Capture-and-assert** â€” the live client wraps `fetch` with a recorder, so
   wire-format assertions (bracket encoding) run on the real serialized bytes
   regardless of the response status; if authentication is refused, the same
   payload is replayed through the SDK's low-level `request()` pipeline with a
   placeholder token so the encoding check still sees genuine bytes.
-- **Known caveat** — if the demo API rejects the configured credentials
+- **Known caveat** â€” if the demo API rejects the configured credentials
   (403 "Invalid credentials"), the auth test fails with `PermissionError` by
   design: the failure is the signal that the credentials are wrong, and the
   test is deliberately not weakened to mask it.
@@ -81,10 +81,10 @@ Properties of the suite (see `test/integration/helpers.ts`):
 `.github/workflows/ci.yml` runs on pushes to `master`, on pull requests and
 on manual `workflow_dispatch`:
 
-- **`test` job** — Node **18 / 20 / 22** matrix: `npm ci` → `npm run lint`
-  → `npm run typecheck` → `npm run test:coverage`; the coverage report is
+- **`test` job** â€” Node **20 / 22 / 24** matrix: `npm ci` â†’ `npm run lint`
+  â†’ `npm run typecheck` â†’ `npm run test:coverage`; the coverage report is
   uploaded as an artifact on Node 22.
-- **`integration` job** — runs only when the repository secrets are
+- **`integration` job** â€” runs only when the repository secrets are
   configured. Secrets cannot be referenced directly in `if:` conditionals
   (GitHub restriction), so they are exposed as job-level env vars and every
   step is guarded on `env.SAMEDAY_USER != ''`; with no secrets the job
@@ -92,10 +92,10 @@ on manual `workflow_dispatch`:
 
 ### Adding the secrets
 
-1. On GitHub: **Settings → Secrets and variables → Actions**.
+1. On GitHub: **Settings â†’ Secrets and variables â†’ Actions**.
 2. Under **Repository secrets**, add:
-   - `SAMEDAY_USER` — your API user,
-   - `SAMEDAY_PASSWORD` — your API password.
+   - `SAMEDAY_USER` â€” your API user,
+   - `SAMEDAY_PASSWORD` â€” your API password.
 3. The workflow sets `SAMEDAY_ENV: demo` itself; no third secret is needed.
 
-Without secrets every CI run stays green — integration simply skips.
+Without secrets every CI run stays green â€” integration simply skips.

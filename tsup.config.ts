@@ -7,7 +7,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: 'dist',
-  target: 'node18',
+  target: 'node20',
   outExtension({ format }) {
     return {
       js: format === 'cjs' ? '.cjs' : '.mjs',

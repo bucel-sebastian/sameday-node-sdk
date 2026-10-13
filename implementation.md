@@ -1,10 +1,10 @@
-# Implementation Plan: `sameday-node-sdk`
+﻿# Implementation Plan: `sameday-node-sdk`
 
 TypeScript SDK for the Sameday Courier API, designed to make integrations easier.
 
 **Status:** approved, ready to implement
 **Package name:** `sameday-node-sdk` (free on npm)
-**Target:** Node.js ≥ 18, native `fetch`, zero runtime dependencies
+**Target:** Node.js â‰¥ 18, native `fetch`, zero runtime dependencies
 
 ---
 
@@ -12,17 +12,17 @@ TypeScript SDK for the Sameday Courier API, designed to make integrations easier
 
 Source: OpenAPI 3.0 spec (v2.0.0) extracted from `https://sameday-api.demo.zitec.com/documentation/client` (spec committed to `openapi/openapi-spec.json`).
 
-- **36 endpoints** — AWB lifecycle, pickup points, geolocation, status sync, lockers/OOH, COD ledgers, standby returns, UIT codes
+- **36 endpoints** â€” AWB lifecycle, pickup points, geolocation, status sync, lockers/OOH, COD ledgers, standby returns, UIT codes
 - **Environments:**
   - prod: `https://api.sameday.ro`
   - demo: `https://sameday-api.demo.zitec.com`
-- **Auth:** `POST /api/authenticate` with `X-AUTH-USERNAME` / `X-AUTH-PASSWORD` headers, body `remember_me=true` (form-urlencoded) → `{ token, expire_at, expire_at_utc }`
+- **Auth:** `POST /api/authenticate` with `X-AUTH-USERNAME` / `X-AUTH-PASSWORD` headers, body `remember_me=true` (form-urlencoded) â†’ `{ token, expire_at, expire_at_utc }`
   - token valid **12h** (default) or **14 days** (`remember_me=true`)
   - subsequent requests: `X-AUTH-TOKEN` header
 - **Request bodies:** `application/x-www-form-urlencoded` (NOT JSON) for POST/PUT/PATCH, with **nested objects**
-- **Pagination:** query params `page` + `countPerPage` (default 500) → response `{ total, currentPage, pages, perPage, data }`
+- **Pagination:** query params `page` + `countPerPage` (default 500) â†’ response `{ total, currentPage, pages, perPage, data }`
 - **Errors:** uniform envelope `{ error: { code, message } }`
-- **No existing Node SDK** for Sameday (only official PHP SDK) — greenfield opportunity
+- **No existing Node SDK** for Sameday (only official PHP SDK) â€” greenfield opportunity
 
 ---
 
@@ -31,18 +31,18 @@ Source: OpenAPI 3.0 spec (v2.0.0) extracted from `https://sameday-api.demo.zitec
 | Decision | Choice |
 |---|---|
 | Language | **TypeScript** (strict), compiled to ESM + CJS + `.d.ts` |
-| API coverage | **Full** — all 36 endpoints |
-| HTTP client | **Native `fetch`** (Node 18+), zero runtime deps |
+| API coverage | **Full** â€” all 36 endpoints |
+| HTTP client | **Native `fetch`** (Node 20+), zero runtime deps |
 | npm package | **`sameday-node-sdk`** |
-| Nested form encoding | **Bracket notation** (`awbRecipient[name]=...`) — verify against demo API first |
-| Release trigger | **Tag push `v*`** → workflow tests, publishes, creates GitHub Release |
+| Nested form encoding | **Bracket notation** (`awbRecipient[name]=...`) â€” verify against demo API first |
+| Release trigger | **Tag push `v*`** â†’ workflow tests, publishes, creates GitHub Release |
 | npm auth | **OIDC trusted publishing + provenance** (no token secrets) |
 
 ---
 
 ## 3. Project Setup
 
-- **Build:** `tsup` → `dist/esm`, `dist/cjs`, `dist/index.d.ts`
+- **Build:** `tsup` â†’ `dist/esm`, `dist/cjs`, `dist/index.d.ts`
 - **Test:** `vitest` + v8 coverage
 - **Lint:** ESLint + `@typescript-eslint`
 - **Runtime deps:** none
@@ -50,7 +50,7 @@ Source: OpenAPI 3.0 spec (v2.0.0) extracted from `https://sameday-api.demo.zitec
   - `files: ["dist"]`
   - `publishConfig.access: "public"`
   - `prepublishOnly: "npm run build"`
-  - `engines: { "node": ">=18" }`
+  - `engines: { "node": ">=20" }`
   - `exports` map with `types` / `import` / `require`
 - **Scripts:** `build`, `test`, `test:coverage`, `test:integration`, `typecheck`, `lint`, `prepublishOnly`
 
@@ -60,8 +60,8 @@ Source: OpenAPI 3.0 spec (v2.0.0) extracted from `https://sameday-api.demo.zitec
 
 ```
 src/
-  index.ts                 # public entry — re-exports SamedayClient, errors, types, consts
-  client.ts                # SamedayClient — auth, token cache/refresh, resource namespaces
+  index.ts                 # public entry â€” re-exports SamedayClient, errors, types, consts
+  client.ts                # SamedayClient â€” auth, token cache/refresh, resource namespaces
   http/
     request.ts             # fetch pipeline: headers, timeouts, JSON/binary parsing, retries
     form.ts                # bracket-notation form encoder for nested bodies
@@ -120,12 +120,12 @@ awbRecipient[name]=John&awbRecipient[city]=123&parcels[0][weight]=0.5&parcels[0]
 
 ```
 SamedayError (base: status, code, message, raw body)
-├── AuthenticationError   (401)
-├── PermissionError       (403)
-├── ValidationError       (400 — exposes .errors details)
-├── NotFoundError         (404)
-├── RateLimitError        (429)
-└── ServerError           (5xx)
+â”œâ”€â”€ AuthenticationError   (401)
+â”œâ”€â”€ PermissionError       (403)
+â”œâ”€â”€ ValidationError       (400 â€” exposes .errors details)
+â”œâ”€â”€ NotFoundError         (404)
+â”œâ”€â”€ RateLimitError        (429)
+â””â”€â”€ ServerError           (5xx)
 ```
 
 ### 4.4 Pagination
@@ -166,41 +166,41 @@ Async iterators on every paginated list endpoint; support early `break` and prop
 
 | File | Covers |
 |---|---|
-| `form.test.ts` | Bracket-encoding: nested objects, arrays, numbers/booleans/dates, unicode, `undefined`/`null` stripping; full AWB payload → snapshot |
+| `form.test.ts` | Bracket-encoding: nested objects, arrays, numbers/booleans/dates, unicode, `undefined`/`null` stripping; full AWB payload â†’ snapshot |
 | `auth.test.ts` | Token fetch + `remember_me`, cache until `expire_at`, single-flight concurrent auth, refresh-once-on-401, no retry loop |
-| `errors.test.ts` | 400/401/403/404/429/5xx → typed errors, `ValidationError.errors`, binary error bodies |
+| `errors.test.ts` | 400/401/403/404/429/5xx â†’ typed errors, `ValidationError.errors`, binary error bodies |
 | `pagination.test.ts` | Async iterator: multi-page, final page, empty, early `break`, mid-iteration error |
 | `resources/*.test.ts` | Per-resource: correct method/path/query/body; PDF/binary handling |
 
-- **Fixtures:** `test/fixtures/` — payloads derived from the OpenAPI spec + captured demo responses
+- **Fixtures:** `test/fixtures/` â€” payloads derived from the OpenAPI spec + captured demo responses
 - **Coverage:** v8 provider; thresholds enforced (~90% lines on `src/http`, `client.ts`, `errors.ts`); CI fails below threshold
 
 ### Integration tests (opt-in `npm run test:integration`)
 
 Requires demo credentials via env vars (`SAMEDAY_USER`, `SAMEDAY_PASSWORD`, `SAMEDAY_ENV=demo`); skipped when absent.
 
-Flow: authenticate → services → pickup points → geolocation → `estimateCost` → `createAwb` → download label → `cancelAwb`.
+Flow: authenticate â†’ services â†’ pickup points â†’ geolocation â†’ `estimateCost` â†’ `createAwb` â†’ download label â†’ `cancelAwb`.
 
 ---
 
 ## 7. GitHub Actions
 
-### `.github/workflows/ci.yml` — push to `main` + PRs
+### `.github/workflows/ci.yml` â€” push to `main` + PRs
 
-- Node **18 / 20 / 22** matrix
-- `npm ci` → lint → typecheck → unit tests + coverage (artifact upload; Codecov optional)
+- Node **20 / 22 / 24** matrix
+- `npm ci` â†’ lint â†’ typecheck â†’ unit tests + coverage (artifact upload; Codecov optional)
 - `integration` job: runs only when secrets are configured (`if:` guard), otherwise skipped cleanly
 
-### `.github/workflows/release.yml` — `push: tags: ['v*']`
+### `.github/workflows/release.yml` â€” `push: tags: ['v*']`
 
 1. Checkout, Node 22, `npm ci`
 2. Gate: lint + typecheck + full test suite
 3. `npm run build`
 4. `npm publish --provenance --access public` via **OIDC trusted publishing**
-   - One-time setup: npmjs.com → package → Settings → Trusted Publisher → add this repo + workflow filename
+   - One-time setup: npmjs.com â†’ package â†’ Settings â†’ Trusted Publisher â†’ add this repo + workflow filename
 5. Create GitHub Release from the tag with auto-generated notes
 
-**Release flow:** `npm version patch|minor|major` → `git push --follow-tags` → workflow does the rest.
+**Release flow:** `npm version patch|minor|major` â†’ `git push --follow-tags` â†’ workflow does the rest.
 
 ---
 
@@ -213,21 +213,21 @@ Flow: authenticate → services → pickup points → geolocation → `estimateC
 
 ## 9. Implementation Order
 
-1. **Scaffold** — tsconfig, tsup, vitest, eslint, package.json, gitignore
-2. **Smoke test encoding** — probe demo API (`POST /api/awb/estimate-cost`, read-only/safe) with bracket-notation forms; confirm before building on it
-3. **Core** — `http/form.ts`, `http/request.ts`, `errors.ts`, `client.ts` (auth/token/retry)
-4. **Types** — generate TS interfaces from committed `openapi/openapi-spec.json`
-5. **Resources** — awb → pickupPoints → geolocation → status → ooh → ledger → standbyReturns → uitCodes → services
-6. **Pagination** — async iterators on all paginated lists
-7. **Tests** — full unit suite + fixtures + opt-in integration suite
-8. **CI/CD** — ci.yml + release.yml
-9. **Docs** — README + typedoc
+1. **Scaffold** â€” tsconfig, tsup, vitest, eslint, package.json, gitignore
+2. **Smoke test encoding** â€” probe demo API (`POST /api/awb/estimate-cost`, read-only/safe) with bracket-notation forms; confirm before building on it
+3. **Core** â€” `http/form.ts`, `http/request.ts`, `errors.ts`, `client.ts` (auth/token/retry)
+4. **Types** â€” generate TS interfaces from committed `openapi/openapi-spec.json`
+5. **Resources** â€” awb â†’ pickupPoints â†’ geolocation â†’ status â†’ ooh â†’ ledger â†’ standbyReturns â†’ uitCodes â†’ services
+6. **Pagination** â€” async iterators on all paginated lists
+7. **Tests** â€” full unit suite + fixtures + opt-in integration suite
+8. **CI/CD** â€” ci.yml + release.yml
+9. **Docs** â€” README + typedoc
 
 ## 10. Verification Criteria
 
 - [ ] Bracket encoding accepted by demo API (estimate-cost smoke test passes)
 - [ ] `npm run typecheck` + `npm run lint` clean
-- [ ] Unit tests green on Node 18/20/22, coverage thresholds met
+- [ ] Unit tests green on Node 20/22/24, coverage thresholds met
 - [ ] Integration suite passes against demo env when creds provided
 - [ ] `npm pack` output contains only `dist/` + README + license
 - [ ] Both `import` (ESM) and `require` (CJS) entry points resolve in a scratch project

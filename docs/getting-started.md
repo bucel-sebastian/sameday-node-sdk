@@ -1,12 +1,12 @@
-# Getting started
+﻿# Getting started
 
-Install the package, create a client, call the API — the SDK handles authentication for you.
+Install the package, create a client, call the API â€” the SDK handles authentication for you.
 
 ```bash
 npm install sameday-node-sdk
 ```
 
-Requires Node.js >= 18 (native `fetch`). Zero runtime dependencies.
+Requires Node.js >= 20 (native `fetch`). Zero runtime dependencies.
 
 ## Create a client
 
@@ -26,7 +26,7 @@ const client = new SamedayClient({
 | `demo` | `https://sameday-api.demo.zitec.com` |
 
 Use `demo` while developing against the sandbox, and drop the option (or pass
-`environment: 'prod'`) in production. A fully custom `baseUrl` overrides both —
+`environment: 'prod'`) in production. A fully custom `baseUrl` overrides both â€”
 see [Configuration](configuration.md).
 
 If your integration is identified by a platform (marketplace, e-commerce
@@ -54,7 +54,7 @@ You never handle tokens yourself:
    The client refreshes it proactively ~60 seconds before it expires.
 3. Every subsequent request carries the token in the `X-AUTH-TOKEN` header.
 4. If the API answers **401 anyway**, the client discards the token,
-   re-authenticates **once** and retries the request — it never loops.
+   re-authenticates **once** and retries the request â€” it never loops.
 5. Concurrent first requests **share a single authenticate call**
    (single-flight), so `Promise.all([...])` does not stampede the API.
 
@@ -67,7 +67,7 @@ const token = await client.ensureToken();
 
 ## First call
 
-Anything you need from the catalogues can be fetched without side effects —
+Anything you need from the catalogues can be fetched without side effects â€”
 for example the delivery services available to your account:
 
 ```ts
@@ -80,7 +80,7 @@ for (const service of services.data) {
 ```
 
 List responses are always `Paginated<T>` (`total`, `currentPage`, `pages`,
-`perPage`, `data`) — see [Pagination](pagination.md) for single-page calls and
+`perPage`, `data`) â€” see [Pagination](pagination.md) for single-page calls and
 the `iterate()` helpers.
 
 To look up city/county ids for pickup-point addresses:
@@ -92,7 +92,7 @@ const cities = await client.geolocation.cities({ county: 'Bucuresti' });
 
 ## Where to go next
 
-- [AWB lifecycle](awb.md) — create your first waybill, download its label.
-- [Pickup points](pickup-points.md) — manage sender locations and contacts.
-- [Error handling](errors.md) — typed errors, timeouts, retrying.
-- [Configuration](configuration.md) — every client option in one table.
+- [AWB lifecycle](awb.md) â€” create your first waybill, download its label.
+- [Pickup points](pickup-points.md) â€” manage sender locations and contacts.
+- [Error handling](errors.md) â€” typed errors, timeouts, retrying.
+- [Configuration](configuration.md) â€” every client option in one table.

@@ -1,4 +1,4 @@
-# sameday-node-sdk
+﻿# sameday-node-sdk
 
 [![npm version](https://img.shields.io/npm/v/sameday-node-sdk.svg)](https://www.npmjs.com/package/sameday-node-sdk)
 [![CI](https://github.com/bucel-sebastian/sameday-node-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/bucel-sebastian/sameday-node-sdk/actions/workflows/ci.yml)
@@ -8,12 +8,12 @@ TypeScript/JavaScript client for the Sameday courier API (Romania): AWBs, pickup
 
 ## Features
 
-- **Zero runtime dependencies** — native `fetch`, Node.js >= 18
+- **Zero runtime dependencies** â€” native `fetch`, Node.js >= 20
 - **Full 36-endpoint coverage** across nine namespaces (`awb`, `pickupPoints`, `geolocation`, `services`, `status`, `ooh`, `ledger`, `standbyReturns`, `uitCodes`)
-- **Typed error hierarchy** — HTTP status mapped to `ValidationError`, `AuthenticationError`, `NotFoundError`, `RateLimitError`, ...
-- **Bracket-notation form encoding** — pass plain nested JS objects; the SDK sends `awbRecipient[name]=...` bodies the API expects
-- **Async-iterator pagination** — `for await (const item of client.<resource>.iterate())` walks every page
-- **Automatic auth** — token obtained, cached and refreshed for you (12h or 14-day tokens)
+- **Typed error hierarchy** â€” HTTP status mapped to `ValidationError`, `AuthenticationError`, `NotFoundError`, `RateLimitError`, ...
+- **Bracket-notation form encoding** â€” pass plain nested JS objects; the SDK sends `awbRecipient[name]=...` bodies the API expects
+- **Async-iterator pagination** â€” `for await (const item of client.<resource>.iterate())` walks every page
+- **Automatic auth** â€” token obtained, cached and refreshed for you (12h or 14-day tokens)
 - **Dual ESM + CJS builds** with bundled type declarations
 
 ## Installation
@@ -22,7 +22,7 @@ TypeScript/JavaScript client for the Sameday courier API (Romania): AWBs, pickup
 npm install sameday-node-sdk
 ```
 
-Requires **Node.js >= 18** (the SDK uses the built-in `fetch`).
+Requires **Node.js >= 20** (the SDK uses the built-in `fetch`).
 
 ### Quickstart
 
@@ -75,12 +75,12 @@ Every SDK error extends `SamedayError` and is chosen by HTTP status. The API's `
 | Class | Raised on |
 |---|---|
 | `SamedayError` | Base class; also timeouts and JSON parse failures |
-| `ValidationError` | 400 — malformed request (details in `.raw`) |
-| `AuthenticationError` | 401 — invalid credentials/token |
-| `PermissionError` | 403 — authenticated but not allowed |
-| `NotFoundError` | 404 — resource does not exist |
-| `RateLimitError` | 429 — exposes `.retryAfter` (seconds) |
-| `ServerError` | 5xx — API failed to process the request |
+| `ValidationError` | 400 â€” malformed request (details in `.raw`) |
+| `AuthenticationError` | 401 â€” invalid credentials/token |
+| `PermissionError` | 403 â€” authenticated but not allowed |
+| `NotFoundError` | 404 â€” resource does not exist |
+| `RateLimitError` | 429 â€” exposes `.retryAfter` (seconds) |
+| `ServerError` | 5xx â€” API failed to process the request |
 
 ```ts
 import { ValidationError, RateLimitError } from 'sameday-node-sdk';
@@ -102,13 +102,13 @@ Options accepted by `new SamedayClient(...)`:
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `user` | `string` | — (required) | API username, sent as `X-AUTH-USERNAME` |
-| `password` | `string` | — (required) | API password, sent as `X-AUTH-PASSWORD` |
+| `user` | `string` | â€” (required) | API username, sent as `X-AUTH-USERNAME` |
+| `password` | `string` | â€” (required) | API password, sent as `X-AUTH-PASSWORD` |
 | `environment` | `'prod' \| 'demo'` | `'prod'` | Base URL preset: `https://api.sameday.ro` or `https://sameday-api.demo.zitec.com`; ignored when `baseUrl` is set |
-| `baseUrl` | `string` | — | Full base URL, overrides `environment` |
-| `rememberMe` | `boolean` | `true` | `true` → 14-day token, `false` → 12-hour token |
-| `platformName` | `string` | — | With `platformVersion` sets `X-Platform: name/version` (both required) |
-| `platformVersion` | `string` | — | See `platformName` |
+| `baseUrl` | `string` | â€” | Full base URL, overrides `environment` |
+| `rememberMe` | `boolean` | `true` | `true` â†’ 14-day token, `false` â†’ 12-hour token |
+| `platformName` | `string` | â€” | With `platformVersion` sets `X-Platform: name/version` (both required) |
+| `platformVersion` | `string` | â€” | See `platformName` |
 | `timeoutMs` | `number` | `30000` | Per-request timeout in milliseconds |
 
 See [Configuration](docs/configuration.md) for details, including custom base URLs and `fetchImpl` injection.
@@ -126,7 +126,7 @@ The live-API integration suite is opt-in and skips itself without credentials:
 SAMEDAY_USER=... SAMEDAY_PASSWORD=... SAMEDAY_ENV=demo npm run test:integration
 ```
 
-CI (`.github/workflows/ci.yml`) runs lint, typecheck and the unit suite on Node 18, 20 and 22 for every push/PR; the integration job runs only when the `SAMEDAY_USER`/`SAMEDAY_PASSWORD` repository secrets are configured. Details in [Testing](docs/testing.md).
+CI (`.github/workflows/ci.yml`) runs lint, typecheck and the unit suite on Node 20, 22 and 24 for every push/PR; the integration job runs only when the `SAMEDAY_USER`/`SAMEDAY_PASSWORD` repository secrets are configured. Details in [Testing](docs/testing.md).
 
 ## Releasing
 
